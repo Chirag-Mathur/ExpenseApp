@@ -9,7 +9,6 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Expense App',
@@ -18,12 +17,14 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.amber,
         fontFamily: 'Quicksand',
         textTheme: ThemeData.light().textTheme.copyWith(
-              title: TextStyle(
-                fontFamily: 'OpenSans',
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            title: TextStyle(
+              fontFamily: 'OpenSans',
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
+            button: TextStyle(
+              color: Colors.white,
+            )),
         appBarTheme: AppBarTheme(
           textTheme: ThemeData.light().textTheme.copyWith(
                 title: TextStyle(
@@ -60,20 +61,18 @@ class _MyHomePageState extends State<MyHomePage> {
     // ),
   ];
 
-
-  List<Transaction> get _recentTransactions{
+  List<Transaction> get _recentTransactions {
     return _userTransactions.where((tx) {
       return tx.dateTime.isAfter(DateTime.now().subtract(Duration(days: 7)));
-
     }).toList();
   }
 
-  void _addNewTransactions(String title, double amount) {
+  void _addNewTransactions(String title, double amount, DateTime choosenDate) {
     final newtx = Transaction(
       title: title,
       amount: amount,
       id: DateTime.now().toString(),
-      dateTime: DateTime.now(),
+      dateTime: choosenDate,
     );
 
     setState(() {
@@ -88,6 +87,15 @@ class _MyHomePageState extends State<MyHomePage> {
         return NewTransaction(_addNewTransactions);
       },
     );
+  }
+  void _deleteTransactions(String id){
+    setState(() {
+      _userTransactions.removeWhere((tx){
+        return tx.id==id;
+
+      },);
+    });
+
   }
 
   @override
@@ -111,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Chart(_recentTransactions),
-              TransactionList(_userTransactions),
+              TransactionList(_userTransactions, _deleteTransactions),
             ],
           ),
         ),
